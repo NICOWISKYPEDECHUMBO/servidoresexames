@@ -52,6 +52,16 @@
   .destaque{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:12px;}
   .status{font-size:13px;text-align:center;margin-top:10px;color:var(--suave);min-height:18px;}
   footer{text-align:center;font-size:12px;color:var(--suave);padding:20px;}
+  .so-link{color:var(--vermelho);font-weight:800;font-size:19px;text-align:center;line-height:1.3;
+           background:#fff5f5;border:2px solid var(--vermelho);border-radius:10px;padding:14px;margin-top:12px;}
+  /* Modal Mamografia/Papanicolau */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:18px;}
+  .modal-bg.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:24px 20px;text-align:center;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+  .modal .x{position:absolute;top:10px;right:14px;border:none;background:none;font-size:26px;color:var(--suave);cursor:pointer;line-height:1;}
+  .modal h3{color:var(--azul);margin:6px 0 10px;font-size:19px;}
+  .modal p{font-size:15px;color:var(--texto);margin:0 0 18px;line-height:1.5;}
+  .modal .wa{font-size:16px;padding:14px 22px;}
   .hidden{display:none;}
 </style>
 </head>
@@ -186,7 +196,7 @@
     <input id="a_unidade" type="text" readonly>
 
     <label>Tipo de atendimento</label>
-    <select id="a_tipo">
+    <select id="a_tipo" onchange="checarTipo()">
       <option value="">Selecione...</option>
       <option>Avaliação Clínica (Consulta)</option>
       <option>Exames laboratoriais</option>
@@ -415,7 +425,7 @@ function escolherClinica(id){
   html += linhaInfo('Endereço', c.endereco);
   if(c.referencia) html += linhaInfo('Referência', c.referencia);
   html += '</div>';
-  html += '<div class="destaque">Atendimento por ordem de chegada, <strong>após agendamento conosco</strong>.</div>';
+  html += '<div class="so-link">SOMENTE APÓS AGENDAMENTO POR ESTE LINK!!</div>';
   document.getElementById('clinica-info').innerHTML = html;
   document.getElementById('a_unidade').value = c.nome;
   go('screen-unidade-info');
@@ -474,6 +484,8 @@ async function enviarAgendamento(){
   const erro = document.getElementById('a_erro');
   const status = document.getElementById('a_status');
   if(!validar(campos)){ erro.style.display='block'; return; }
+  // Mamografia/Papanicolau não podem ser agendados pelo form — só pela equipe
+  if(ehMamoPapa(campos[4].value)){ abrirModalMamo(); return; }
   erro.style.display='none'; status.textContent='Enviando...';
   const c = clinicaAtual || {};
   const dados = {
@@ -491,6 +503,34 @@ async function enviarAgendamento(){
     'Sua solicitação para a unidade '+dados.unidade+' foi registrada.';
   go('screen-agendamento-fim');
 }
+/* ===== Mamografia/Papanicolau: agendamento só pela equipe ===== */
+function ehMamoPapa(valor){
+  return valor === 'Mamografia/Papanicolau';
+}
+function abrirModalMamo(){
+  document.getElementById('modal-mamo').classList.add('show');
+}
+function fecharModalMamo(){
+  document.getElementById('modal-mamo').classList.remove('show');
+  // Mantém o agendamento bloqueado: zera a seleção desses dois tipos
+  const sel = document.getElementById('a_tipo');
+  if(ehMamoPapa(sel.value)) sel.value = '';
+}
+// Ao escolher o tipo no menu: se for mamografia/papanicolau, abre o aviso na hora
+function checarTipo(){
+  const sel = document.getElementById('a_tipo');
+  if(ehMamoPapa(sel.value)) abrirModalMamo();
+}
 </script>
+  <!-- ====== MODAL MAMOGRAFIA / PAPANICOLAU ====== -->
+  <div class="modal-bg" id="modal-mamo">
+    <div class="modal">
+      <button class="x" onclick="fecharModalMamo()" aria-label="Fechar">&times;</button>
+      <h3>Agendamento especial</h3>
+      <p>Para agendamento de <strong>Mamografia / Papanicolau</strong>, por favor entre em contato com a nossa equipe de atendimento.</p>
+      <a class="wa" href="https://wa.me/5521967228800" target="_blank">💬 Falar com a equipe no WhatsApp</a>
+    </div>
+  </div>
+
 </body>
 </html>
