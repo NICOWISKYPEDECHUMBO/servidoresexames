@@ -111,7 +111,7 @@
   .dialog p{margin:0 0 18px;font-size:14.5px;color:var(--muted)}
   .err{color:var(--red);font-size:13px;margin-top:12px;display:none}
   .status{font-size:13px;text-align:center;margin-top:12px;color:var(--muted);min-height:16px}
-  footer{max-width:600px;margin:0 auto;padding:6px 20px 34px;text-align:center;color:var(--muted);font-size:11px;white-space:nowrap}
+  footer{max-width:600px;margin:0 auto;padding:6px 20px 200px;text-align:center;color:var(--muted);font-size:11px;white-space:nowrap}
   footer .div{width:36px;height:1px;background:var(--line);margin:0 auto 12px}
   .hidden{display:none}
   @media (max-width:440px){
@@ -121,6 +121,51 @@
     footer{font-size:9.5px;padding-left:8px;padding-right:8px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ================= CHATBOT ================= */
+  .cb-launch{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:var(--navy);
+    border:none;cursor:pointer;box-shadow:0 6px 20px rgba(16,39,60,.3);display:flex;align-items:center;justify-content:center;z-index:40}
+  .cb-launch:hover{background:var(--navy-d)}
+  .cb-launch svg{stroke:#fff;fill:none}
+  .cb-hint{position:fixed;right:20px;bottom:88px;background:#fff;border:1px solid var(--line);
+    box-shadow:0 8px 22px rgba(16,39,60,.16);border-radius:12px;padding:9px 13px;font-size:13px;
+    font-weight:600;color:var(--ink);z-index:40;cursor:pointer;line-height:1.25;max-width:180px;animation:cbFloat 2.4s ease-in-out infinite}
+  .cb-hint::after{content:"";position:absolute;right:20px;bottom:-6px;width:12px;height:12px;background:#fff;
+    border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+  .cb-hint .cb-hclose{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;
+    background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:13px;line-height:20px;padding:0;text-align:center}
+  @keyframes cbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @media (prefers-reduced-motion:reduce){.cb-hint{animation:none}}
+  .cb-panel{position:fixed;right:20px;bottom:20px;width:360px;max-width:calc(100vw - 32px);height:520px;
+    max-height:calc(100vh - 40px);background:#fff;border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 20px 60px rgba(16,39,60,.28);display:none;flex-direction:column;overflow:hidden;z-index:41}
+  .cb-panel.show{display:flex}
+  .cb-head{background:var(--navy);color:#fff;padding:13px 15px;display:flex;align-items:center;gap:10px}
+  .cb-head .cb-t{font-weight:700;font-size:14.5px}
+  .cb-head .cb-s{font-size:11.5px;opacity:.85}
+  .cb-head .cb-x{background:none;border:none;color:#fff;cursor:pointer;padding:4px;border-radius:6px;display:flex}
+  .cb-head .cb-x:hover{background:rgba(255,255,255,.15)}
+  .cb-body{flex:1;overflow-y:auto;padding:14px;background:#f5f7f9}
+  .cb-msg{max-width:86%;padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.45;margin-bottom:10px;white-space:pre-line}
+  .cb-bot{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;color:var(--ink)}
+  .cb-user{background:var(--navy);color:#fff;margin-left:auto;border-top-right-radius:4px}
+  .cb-chips{display:flex;flex-direction:column;gap:8px;margin:2px 0 10px}
+  .cb-chip{text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:13.5px;color:var(--navy);cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s}
+  .cb-chip:hover{border-color:var(--navy);background:#eff6fd}
+  .cb-wa{display:inline-flex;align-items:center;justify-content:center;background:var(--green);color:#fff;
+    text-decoration:none;border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:650;margin-bottom:10px}
+  .cb-wa:hover{background:var(--green-d)}
+  .cb-foot{border-top:1px solid var(--line);padding:10px;display:flex;gap:8px;background:#fff}
+  .cb-foot input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-family:inherit;color:var(--ink)}
+  .cb-foot input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(47,107,176,.15)}
+  .cb-foot button{flex:none;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:0 15px;cursor:pointer;font-weight:650;font-family:inherit}
+  .cb-foot button:hover{background:var(--navy-d)}
+  @media (max-width:440px){
+    .cb-panel{right:8px;bottom:8px;width:calc(100vw - 16px);height:calc(100vh - 16px);max-height:none}
+    .cb-launch{right:14px;bottom:14px}
+    .cb-hint{right:14px;bottom:80px}
+  }
 </style>
 </head>
 <body>
@@ -612,6 +657,146 @@ function val(id){return document.getElementById(id).value;}
 initRegioes();
 mascaraCPF(document.getElementById('r_cpf'));mascaraCPF(document.getElementById('a_cpf'));
 mascaraTel(document.getElementById('r_tel'));mascaraTel(document.getElementById('a_tel'));
+
+/* ===================== CHATBOT (ÁRVORE) ===================== */
+var CHATBOT_URL = "https://script.google.com/macros/s/AKfycbyZT8CCxXfj0B7LExS3DLPYFqt5oo81yXWOXA8swZM8hd6Z-Em5eisVQTxMRyeRijqu/exec"; // URL da planilha do chatbot (Dedica Saúde)
+var WA_LINK = "https://wa.me/5521967228800";
+var CHAT_ITENS = [], CHAT_MAP = {}, CHAT_CARREGADO = false, CB_CHIPS = null;
+
+function normaliza(t){return (t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function fecharDica(){var d=document.getElementById('cb-hint');if(d)d.style.display='none';}
+function abrirChat(){
+  document.getElementById('cb-panel').classList.add('show');
+  document.getElementById('cb-launch').style.display='none';
+  fecharDica();
+  if(!CHAT_CARREGADO) iniciarChat();
+}
+function fecharChat(){
+  document.getElementById('cb-panel').classList.remove('show');
+  document.getElementById('cb-launch').style.display='flex';
+}
+function cbAddMsg(texto,tipo){
+  var b=document.getElementById('cb-body');
+  var d=document.createElement('div');
+  d.className='cb-msg '+(tipo==='user'?'cb-user':'cb-bot');
+  d.textContent=texto;b.appendChild(d);b.scrollTop=b.scrollHeight;
+}
+function cbAddWA(){
+  var b=document.getElementById('cb-body');
+  var a=document.createElement('a');a.className='cb-wa';a.href=WA_LINK;a.target='_blank';a.rel='noopener';
+  a.textContent='Falar com a equipe pelo WhatsApp';b.appendChild(a);b.scrollTop=b.scrollHeight;
+}
+/* Mostra uma lista de botões a partir de uma lista de itens.
+   Remove o grupo de botões anterior para não empilhar (menu > submenu). */
+function cbBotoes(itens, incluirMenu){
+  var b=document.getElementById('cb-body');
+  if(CB_CHIPS && CB_CHIPS.parentNode){ CB_CHIPS.parentNode.removeChild(CB_CHIPS); }
+  var wrap=document.createElement('div');wrap.className='cb-chips';
+  itens.forEach(function(it){
+    if(!it||!it.pergunta)return;
+    var c=document.createElement('button');c.className='cb-chip';c.textContent=it.pergunta;
+    c.onclick=function(){cbResponder(it);};
+    wrap.appendChild(c);
+  });
+  if(incluirMenu){
+    var m=document.createElement('button');m.className='cb-chip';m.textContent='Voltar ao menu inicial';
+    m.onclick=function(){cbMenuInicial(true);};
+    wrap.appendChild(m);
+  }
+  b.appendChild(wrap);CB_CHIPS=wrap;b.scrollTop=b.scrollHeight;
+}
+/* Menu de abertura: só itens marcados como "Menu inicial" */
+function cbMenuInicial(comAviso){
+  if(!CHAT_ITENS.length){cbAddWA();return;}
+  var iniciais=CHAT_ITENS.filter(function(it){return it.inicial;});
+  if(!iniciais.length) iniciais=CHAT_ITENS; // se ninguém marcou, mostra todos
+  if(comAviso) cbAddMsg('Escolha uma opção:','bot');
+  cbBotoes(iniciais,false);
+}
+/* Responde a um item e abre as "próximas" perguntas (árvore) */
+function cbResponder(it){
+  cbAddMsg(it.pergunta,'user');
+  setTimeout(function(){
+    cbAddMsg(it.resposta||'Sem resposta cadastrada.','bot');
+    var filhos=(it.proximas||[]).map(function(id){return CHAT_MAP[id];}).filter(Boolean);
+    if(filhos.length){
+      cbAddMsg('Posso ajudar com mais alguma coisa?','bot');
+      cbBotoes(filhos,true);
+    }else{
+      cbBotoes([],true); // só o "Voltar ao menu inicial"
+    }
+  },180);
+}
+function iniciarChat(){
+  CHAT_CARREGADO=true;
+  cbAddMsg('Olá! Como posso ajudar? Escolha uma opção abaixo ou digite a sua dúvida.','bot');
+  if(CHATBOT_URL){
+    var s=document.createElement('script');
+    s.src=CHATBOT_URL+(CHATBOT_URL.indexOf('?')>-1?'&':'?')+'callback=__chatDados';
+    s.onerror=function(){cbAddMsg('Não consegui carregar as perguntas. Fale com a equipe:','bot');cbAddWA();};
+    document.body.appendChild(s);
+    setTimeout(function(){if(!CHAT_ITENS.length){
+      cbAddMsg('As perguntas não carregaram agora. Fale com a equipe:','bot');cbAddWA();}},8000);
+  }else{
+    cbAddMsg('Se preferir, fale direto com a nossa equipe:','bot');cbAddWA();
+  }
+}
+window.__chatDados=function(data){
+  CHAT_ITENS=(data&&data.itens)?data.itens:[];
+  CHAT_MAP={};
+  CHAT_ITENS.forEach(function(it){ if(it.id) CHAT_MAP[it.id]=it; });
+  cbMenuInicial(false);
+};
+/* Campo de digitar: procura por palavra-chave ou pergunta */
+function enviarChat(){
+  var inp=document.getElementById('cb-input');var txt=inp.value.trim();if(!txt)return;
+  inp.value='';cbAddMsg(txt,'user');
+  var alvo=normaliza(txt),achou=null;
+  for(var i=0;i<CHAT_ITENS.length;i++){
+    var it=CHAT_ITENS[i];
+    var chaves=normaliza(it.chaves).split(',').map(function(x){return x.trim();}).filter(Boolean);
+    var bateChave=chaves.some(function(k){return k&&alvo.indexOf(k)>-1;});
+    var np=normaliza(it.pergunta);
+    var batePergunta=np&&(np.indexOf(alvo)>-1||alvo.indexOf(np)>-1);
+    if(bateChave||batePergunta){achou=it;break;}
+  }
+  setTimeout(function(){
+    if(achou){ cbResponder2(achou); }
+    else{ cbAddMsg('Não encontrei uma resposta pronta para isso. Fale com a nossa equipe:','bot'); cbAddWA(); cbBotoes([],true); }
+  },180);
+}
+/* Igual ao cbResponder, mas sem repetir a pergunta como fala do usuário */
+function cbResponder2(it){
+  cbAddMsg(it.resposta||'Sem resposta cadastrada.','bot');
+  var filhos=(it.proximas||[]).map(function(id){return CHAT_MAP[id];}).filter(Boolean);
+  if(filhos.length){ cbAddMsg('Posso ajudar com mais alguma coisa?','bot'); cbBotoes(filhos,true); }
+  else{ cbBotoes([],true); }
+}
 </script>
+<!-- ================= CHATBOT ================= -->
+<div class="cb-hint" id="cb-hint" onclick="abrirChat()">
+  <button class="cb-hclose" onclick="event.stopPropagation();fecharDica()" aria-label="Fechar">&times;</button>
+  Precisa de ajuda? Pergunte aqui
+</div>
+<button class="cb-launch" id="cb-launch" onclick="abrirChat()" aria-label="Abrir central de ajuda">
+  <svg viewBox="0 0 24 24" width="24" height="24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div class="cb-panel" id="cb-panel">
+  <div class="cb-head">
+    <div style="flex:1">
+      <div class="cb-t">Central de ajuda</div>
+      <div class="cb-s">Tire suas dúvidas ou fale com a equipe</div>
+    </div>
+    <button class="cb-x" onclick="fecharChat()" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="cb-body" id="cb-body"></div>
+  <div class="cb-foot">
+    <input id="cb-input" type="text" placeholder="Digite sua dúvida..." onkeydown="if(event.key==='Enter')enviarChat()">
+    <button onclick="enviarChat()">Enviar</button>
+  </div>
+</div>
+
 </body>
 </html>
