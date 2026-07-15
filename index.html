@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Dedica Saúde — Atendimento ao Servidor</title>
 <style>
   :root{
@@ -511,6 +514,11 @@ const CLINICAS = {
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Rio Grande do Sul, 365 — Vila Muriqui, Mangaratiba",
         referencia:"Próximo ao posto de gasolina dentro de Muriqui"},
+      {id:"itaguai", nome:"Itaguaí",
+        consulta:"Segunda a sexta, 07h às 11h00", exames:"Segunda a sexta, 07h às 11h00",
+        mamografia:"indisponível", papanicolau:"indisponível",
+        endereco:"Rua General Bocaiúva, 785 — Centro, Itaguaí / RJ",
+        referencia:""},
     ]
   }
 };
@@ -613,13 +621,52 @@ function fecharModalMamo(){
 function checarTipo(){var sel=document.getElementById('a_tipo');if(ehMamoPapa(sel.value)) abrirModalMamo();}
 
 /* ===================== ENVIO ===================== */
-var SCRIPT_URL="https://script.google.com/macros/s/AKfycbwdPkRoNwwPzp0NQ0BRuOhC7DRv37nD8bR3GWDzpkwqP2_fG5EzZmbKIVR3_eXX0S0q/exec"; // planilha Dedica Saúde — já configurada
+var SCRIPT_URL="https://script.google.com/macros/s/AKfycbwdPkRoNwwPzp0NQ0BRuOhC7DRv37nD8bR3GWDzpkwqP2_fG5EzZmbKIVR3_eXX0S0q/exec"; // planilha GERAL (recebe tudo)
+
+/* URL da planilha de CADA unidade. Cole entre as aspas a URL /exec
+   da planilha correspondente. Deixe "" para a unidade que ainda não tem. */
+var UNIDADE_URLS = {
+  "Centro RJ — CLÍNICA GSO": "https://script.google.com/macros/s/AKfycbzK5C4yXn6icdn-gaUXmV6AUpLTy6ONa0Qm5m4pwyg3aAdqGAW06bD3TB9G-QNZzXZ7zw/exec",
+  "Copacabana — Dedica Saúde": "https://script.google.com/macros/s/AKfycby09qFuuFEkI8Cqfvyzbdxx6-JXPAMoILbiW6MSNkZ2Ph1bVeKL-LiBTK6mlbVVlMs5IQ/exec",
+  "Tijuca — Dedica Saúde": "https://script.google.com/macros/s/AKfycbxswb4fO5YWJxdu0eIetEWPr7bO2cHP4pGWkfGN746ho7q0tq5scDityU632Sz1BzMuPA/exec",
+  "Barra da Tijuca — RJ EXAMES": "https://script.google.com/macros/s/AKfycbwHm6MJ2-ToEnMh5rn7Wr15IFhDx-uSxeUKVPeam93QIZPNHh8SEr0ZO2-oUqvRd9fa/exec",
+  "Nova Iguaçu — MEDLAB": "https://script.google.com/macros/s/AKfycbxB1nSlgEfh_9c-Z4qIIVMzJZ4wDTddYsqRhGh2e7cSW5UieKjZeWbXRdqNkBces9Pz/exec",
+  "Campo Grande — CLÍNICA GLOBAL": "https://script.google.com/macros/s/AKfycbz0OWEbhA7cm11l9uQ1jtUPInd1KRaBGRMDqvjEdJN-RrcYb3vpSwrLvtjzJIp8RPb8vg/exec",
+  "Niterói — TOTALMED": "https://script.google.com/macros/s/AKfycbzNTsDnR1sjURbS1E_HtWFu6_-Q2EF9qqHpwClj1_FKcta9JCa10jDF9b4yXCZFyBwa9w/exec",
+  "São Gonçalo — TOTALMED": "https://script.google.com/macros/s/AKfycbyINVO8t7Q96XnkOyP7yIACOSHnHNv2GBCt19QLbV3ipR82EsWwdYa2mGe8TFXlixfHtA/exec",
+  "Maricá": "https://script.google.com/macros/s/AKfycbzN2ak5CI6p7LNg1XWAPLZKPP_B8ZTEsP0c5jSxbm-h-NVaBlvNg4EevmTkGqDyeXc/exec",
+  "Petrópolis — FLUXOMED": "https://script.google.com/macros/s/AKfycbyIJWrCT3EBG_rwOAoebA9EDv8BZxMGzLa3nT1P4LSG75Y4xqaClAgxNPje7voqJQ0whg/exec",
+  "Teresópolis — CLÍNICA AC": "https://script.google.com/macros/s/AKfycbz4E3nBcICREYeN1GRicilzULMDoSHNU4ZPq1t3adP3vzqG0APASoDgniAHiuS3l9AaTg/exec",
+  "Nova Friburgo — CLÍNICA HOLOS": "https://script.google.com/macros/s/AKfycbyT9h4A7pyixet4Gp0lyGW27-HAGtTjCpR4TQNDQGcBewX6jJpFr0PgYLiZ2V1ynWzO/exec",
+  "Saquarema — CLÍNICA ALVIDA": "https://script.google.com/macros/s/AKfycbxyMWoO_FXxBqR3cU3UQvfGYq7NSX6FC-aVWu3HUgiRsGdAFZGNJrwL9ONh0sK9wMYilg/exec",
+  "São Pedro da Aldeia — CLÍNICA AC": "https://script.google.com/macros/s/AKfycbzSedI_B-xa5qMt4evvzGb-IwuOnG1FM6b5yvFiBUjsygnCCskMq2roRu-EsrAQMySJtQ/exec",
+  "Cabo Frio — CLÍNICA AC": "https://script.google.com/macros/s/AKfycbwNptupVK9SB9nMm-LecscUSy2FzoMOJ7OQiMUtL-0lgOL0Ra2nrsSFUWNTHUk5E2RS/exec",
+  "Rio das Ostras — CLÍNICA EJL": "https://script.google.com/macros/s/AKfycbwlpOvCBqWTcq5BeIEtKsDVfiQOwwFgpgJaWpOdELtOtr8Pbj6NUovbx76kaweN2RpaBQ/exec",
+  "Campos dos Goytacazes — SEGMED": "https://script.google.com/macros/s/AKfycbzorYM0vDdFFXVgU9PhzHAwyrUH5HA4e-Jp582O3tQ4uVxZ265L1sak-8ASgS-RVwI/exec",
+  "Macaé — CLÍNICA EJL": "https://script.google.com/macros/s/AKfycbyR6rPIH4TDkgJS56mjJZQZFMzLB362Jbf19ZiX_KScUKeQhlONi0fRCuSmicCQPr3iVg/exec",
+  "São Fidélis — SEGMED": "https://script.google.com/macros/s/AKfycbyH0-I1RoLVMyy9KPAUoI_CbhdQM3AQ-YRXKs5GJcLMb_3Rq6TvMI178qc2yIydZJbSrA/exec",
+  "São João da Barra — SEGMED": "https://script.google.com/macros/s/AKfycbxXrZfvYgkjy__QFCDpNTd6X324aWRcREzJzGdsVPXt-sbgcP86m2cHhREWAHooRcyXNQ/exec",
+  "Volta Redonda — CLÍNICA GASPAR": "https://script.google.com/macros/s/AKfycbwHou-u3NTZIzlJyEvTmG-P2zkTE4vGpsEf0gHOxlhcFgbKmzoIUdLLwVTrzfV3aJe8Zg/exec",
+  "Resende": "https://script.google.com/macros/s/AKfycbxGTwaAYAnbU5ygD73miJpYbEn5ipniRiwqmYoEFcg00-UuRkRCOEze7CQAA19y-Okn/exec",
+  "Miguel Pereira": "https://script.google.com/macros/s/AKfycbxuwqyiU1LuW0whyZk66SMt7AEb3dmEVGbks5N0yxctRlJYxqj6NdF_1Kg21FRe4tRYzQ/exec",
+  "Mangaratiba": "https://script.google.com/macros/s/AKfycbzmTJgo9J_r8pKDwm0D1GwVi4zymeUGLiF59FsY6ekTPolIDf3NmHfOzxZ67sqP3_x9/exec",
+  "Itaguaí": "https://script.google.com/macros/s/AKfycbxT0KVPxBsNsTgH5sp_eamsXQ4l_o3ylFdTOXR9uxESQCjlOIXgcPAlz-b_GdCqsS5A/exec",
+};
+
 function salvarLocal(r){var a=JSON.parse(localStorage.getItem('siass_registros')||'[]');a.push(r);localStorage.setItem('siass_registros',JSON.stringify(a));}
+function postURL(url,dados){
+  if(!url) return Promise.resolve(false);
+  return fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
+    .then(function(){return true;}).catch(function(){return false;});
+}
 function enviarSheets(dados,statusEl){
   salvarLocal(dados);
-  if(!SCRIPT_URL) return Promise.resolve(true);
-  return fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
-    .then(function(){return true;})
+  var envios=[];
+  if(SCRIPT_URL) envios.push(postURL(SCRIPT_URL,dados));       // planilha geral
+  var uURL = UNIDADE_URLS[dados.unidade];                       // planilha da unidade escolhida
+  if(uURL) envios.push(postURL(uURL,dados));
+  if(!envios.length) return Promise.resolve(true);
+  return Promise.all(envios).then(function(){return true;})
     .catch(function(){if(statusEl)statusEl.textContent='Salvo neste dispositivo. Falha ao enviar online, tente novamente.';return false;});
 }
 function preenchidos(ids){for(var i=0;i<ids.length;i++){if(!document.getElementById(ids[i]).value.trim())return false;}return true;}
