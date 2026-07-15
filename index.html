@@ -654,20 +654,27 @@ var UNIDADE_URLS = {
 };
 
 function salvarLocal(r){var a=JSON.parse(localStorage.getItem('siass_registros')||'[]');a.push(r);localStorage.setItem('siass_registros',JSON.stringify(a));}
-function postURL(url,dados){
+function postURL(url,dados,tentativa){
   if(!url) return Promise.resolve(false);
-  return fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
-    .then(function(){return true;}).catch(function(){return false;});
+  tentativa=tentativa||1;
+  return fetch(url,{method:'POST',mode:'no-cors',keepalive:true,
+      headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)})
+    .then(function(){return true;})
+    .catch(function(){
+      if(tentativa<3){
+        return new Promise(function(r){setTimeout(r,700);}).then(function(){return postURL(url,dados,tentativa+1);});
+      }
+      return false;
+    });
 }
 function enviarSheets(dados,statusEl){
   salvarLocal(dados);
-  var envios=[];
-  if(SCRIPT_URL) envios.push(postURL(SCRIPT_URL,dados));       // planilha geral
-  var uURL = UNIDADE_URLS[dados.unidade];                       // planilha da unidade escolhida
-  if(uURL) envios.push(postURL(uURL,dados));
-  if(!envios.length) return Promise.resolve(true);
-  return Promise.all(envios).then(function(){return true;})
-    .catch(function(){if(statusEl)statusEl.textContent='Salvo neste dispositivo. Falha ao enviar online, tente novamente.';return false;});
+  if(!SCRIPT_URL) return Promise.resolve(true);
+  // Envia SÓ para a planilha geral; ela distribui para a unidade (server-side).
+  return postURL(SCRIPT_URL,dados).then(function(ok){
+    if(!ok && statusEl) statusEl.textContent='Salvo neste dispositivo. Falha ao enviar online, tente novamente.';
+    return true;
+  });
 }
 function preenchidos(ids){for(var i=0;i<ids.length;i++){if(!document.getElementById(ids[i]).value.trim())return false;}return true;}
 
