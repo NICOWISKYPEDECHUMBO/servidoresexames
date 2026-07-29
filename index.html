@@ -349,6 +349,12 @@
       <h2 class="title">Agendamento registrado</h2>
       <p class="lead" id="fim-msg"></p>
       <div class="notice" style="text-align:left">Compareça à clínica em um dos dias e horários informados, levando a <strong>Guia do SIASS assinada</strong> e um <strong>documento de identificação com foto</strong>. O atendimento é por ordem de chegada, após o agendamento.</div>
+      <div class="notice notice-red" style="text-align:left;margin-top:12px">
+        <strong style="display:block;font-size:15px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em">Importante</strong>
+        Atenção aos dias e horários de funcionamento da clínica.<br><br>
+        Não serão atendidos os servidores com a <strong>Guia fora do prazo de validade</strong>.<br><br>
+        A consulta médica só poderá ser realizada se o servidor levar <strong>impressos todos os exames complementares</strong>.
+      </div>
       <a class="wa mt" href="https://wa.me/5521967228800" target="_blank" rel="noopener">Falar com a equipe pelo WhatsApp</a>
       <button class="btn btn-ghost mt" onclick="reiniciar()">Voltar ao início</button>
     </div>
@@ -405,7 +411,7 @@ const CLINICAS = {
         endereco:"Rua Coronel Francisco Soares, 46 — Sala 101",
         referencia:"Próximo ao túnel, rua ao lado do supermercado Guanabara"},
       {id:"campogrande", nome:"Campo Grande — CLÍNICA GLOBAL",
-        consulta:"Segunda e terça, 14h00 às 16h00", exames:"Segunda e terça, 14h00 às 16h00",
+        consulta:"Segunda a sexta, 07h às 15h", exames:"Segunda a sexta, 07h às 11h30 (por ordem de chegada)",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua dos Franciscanos, 18 — Campo Grande",
         referencia:"Rua antes do Hotel Hotelon, em frente à passarela da Rodoviária"},
