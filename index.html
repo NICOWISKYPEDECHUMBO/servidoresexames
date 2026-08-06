@@ -169,6 +169,30 @@
     .cb-launch{right:14px;bottom:14px}
     .cb-hint{right:14px;bottom:80px}
   }
+  /* ===== MINI-AGENDA / CALENDÁRIO ===== */
+  #agenda-wrap{margin-top:4px}
+  .cal{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:6px;background:#fff}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .cal-head button{border:1px solid var(--line);background:#fff;border-radius:8px;width:34px;height:34px;cursor:pointer;color:var(--navy);font-size:18px;line-height:1}
+  .cal-head button:disabled{opacity:.3;cursor:default}
+  .cal-title{font-weight:700;color:var(--ink);font-size:15px;text-transform:capitalize}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:700;padding:4px 0}
+  .cal-day{aspect-ratio:1;border:none;background:#f3f6f9;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--ink);font-family:inherit}
+  .cal-day:hover:not(:disabled){background:#dfeaf6}
+  .cal-day:disabled{opacity:.28;cursor:default;background:transparent}
+  .cal-day.sel{background:var(--navy);color:#fff;font-weight:700}
+  .cal-day.empty{background:transparent;cursor:default;pointer-events:none}
+  .slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .slot{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 15px;cursor:pointer;font-size:14px;color:var(--navy);font-weight:600;font-family:inherit}
+  .slot:hover{border-color:var(--navy);background:#eff6fd}
+  .slot.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .ag-info{font-size:13.5px;color:var(--navy);margin-top:10px;font-weight:600;min-height:16px}
+  .ag-none{font-size:13.5px;color:var(--red);margin-top:8px;font-weight:600}
+  /* ===== Confirmação em vermelho vibrante ===== */
+  .confirm-red{background:#d81f27;color:#fff;border-radius:11px;padding:16px 18px;text-align:left;margin-top:14px;font-size:15px;line-height:1.55;box-shadow:0 4px 14px rgba(216,31,39,.3)}
+  .confirm-red .big{display:block;font-size:17.5px;font-weight:800;margin-bottom:4px;letter-spacing:.01em}
+  .confirm-red .addr{display:block;margin-top:8px;font-size:14px;opacity:.97}
 </style>
 </head>
 <body>
@@ -311,7 +335,7 @@
     <div class="eyebrow">Agendamento</div>
     <div id="clinica-info"></div>
     <div class="only-link">Somente após agendamento por este link!!</div>
-    <button class="btn btn-primary mt" onclick="go('screen-agendamento')">Preencher dados do agendamento <svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    <button class="btn btn-primary mt" onclick="irAgendamento()">Preencher dados do agendamento <svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
   </section>
 
   <!-- ===== DADOS AGENDAMENTO ===== -->
@@ -337,6 +361,14 @@
       </select>
     </div>
 
+    <div id="agenda-wrap" class="hidden">
+      <label style="margin-top:16px">Escolha o dia e o horário para comparecer</label>
+      <div id="agenda-msg" class="ag-none hidden"></div>
+      <div id="cal" class="cal"></div>
+      <div id="slots" class="slots"></div>
+      <div id="ag-sel" class="ag-info"></div>
+    </div>
+
     <div class="err" id="a_erro">Preencha todos os campos para continuar.</div>
     <button class="btn btn-green mt" onclick="enviarAgendamento()">Confirmar agendamento</button>
     <div class="status" id="a_status"></div>
@@ -348,6 +380,7 @@
       <div class="seal"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
       <h2 class="title">Agendamento registrado</h2>
       <p class="lead" id="fim-msg"></p>
+      <div id="fim-agenda-red" class="confirm-red"></div>
       <div class="notice" style="text-align:left">Compareça à clínica em um dos dias e horários informados, levando a <strong>Guia do SIASS assinada</strong> e um <strong>documento de identificação com foto</strong>. O atendimento é por ordem de chegada, após o agendamento.</div>
       <div class="notice notice-red" style="text-align:left;margin-top:12px">
         <strong style="display:block;font-size:15px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em">Importante</strong>
@@ -401,7 +434,7 @@ const CLINICAS = {
         endereco:"Rua Conde de Bonfim, 460 — Loja D (entrada pela rua lateral)",
         referencia:"Próximo ao Tijuca Tênis Clube / metrô Saens Peña"},
       {id:"barra", nome:"Barra da Tijuca — RJ EXAMES",
-        consulta:"Segunda a sexta, 07h50 às 11h00", exames:"Segunda a sexta, 07h50 às 11h00",
+        consulta:"Segunda, quarta e quinta, 08h às 11h00", exames:"Segunda a sexta, 07h50 às 11h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Armando Lombardi, 800 — Sala 228",
         referencia:"Próximo ao metrô Jardim Oceânico e ao BRT"},
@@ -445,7 +478,7 @@ const CLINICAS = {
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Lúcio Meira, 670 — Sala 515, Várzea, Teresópolis",
         referencia:"Shopping Várzea"},
-      {id:"friburgo", nome:"Nova Friburgo — CLÍNICA HOLOS",
+      {id:"friburgo", nome:"Nova Friburgo",
         consulta:"Segunda a sexta, 07h30 às 10h00 e 14h00 às 17h00", exames:"Segunda a sexta, 07h30 às 10h00 e 14h00 às 17h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Doutor Galdino do Valle Filho, 133 — Centro, Nova Friburgo",
@@ -468,38 +501,18 @@ const CLINICAS = {
       {id:"cabofrio", nome:"Cabo Frio — CLÍNICA AC",
         consulta:"Segunda a sexta, 08h às 10h30", exames:"Segunda a sexta, 08h às 10h30",
         mamografia:"indisponível", papanicolau:"indisponível",
-        endereco:"Rua José Francisco Zeca, 37 — Sala 06",
-        referencia:"Próximo à Secretaria de Esporte"},
-      {id:"riodasostras", nome:"Rio das Ostras — CLÍNICA EJL",
-        consulta:"Segunda a sexta, 07h às 09h00", exames:"Segunda a sexta, 07h às 09h00",
-        mamografia:"indisponível", papanicolau:"indisponível",
-        endereco:"Av. Dr. Geraldo Menecucci de Oliveira, 47 — Parque Aeroporto, Macaé",
+        endereco:"Rua Francisco Vasconcelos, 223 — São Cristóvão, Cabo Frio / RJ",
         referencia:""},
     ]
   },
   outra: {
     titulo: "Outra região do RJ",
     lista: [
-      {id:"campos", nome:"Campos dos Goytacazes — SEGMED",
-        consulta:"Segunda a sexta, 07h00 às 11h00", exames:"Segunda a sexta, 07h00 às 11h00",
-        mamografia:"indisponível", papanicolau:"indisponível",
-        endereco:"Avenida Sete de Setembro, 430 — Centro, Campos dos Goytacazes",
-        referencia:""},
       {id:"macae", nome:"Macaé — CLÍNICA EJL",
         consulta:"Segunda a sexta, 07h às 09h00", exames:"Segunda a sexta, 07h às 09h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Dr. Geraldo Menecucci de Oliveira, 47 — Parque Aeroporto, Macaé",
         referencia:""},
-      {id:"saofidelis", nome:"São Fidélis — SEGMED",
-        consulta:"Segunda a sexta, 07h00 às 11h00", exames:"Segunda a sexta, 07h00 às 11h00",
-        mamografia:"indisponível", papanicolau:"indisponível",
-        endereco:"Rua Frei Vitório, 299 — Centro",
-        referencia:"Em frente à APAE"},
-      {id:"saojoao", nome:"São João da Barra — SEGMED",
-        consulta:"Segunda a quinta, 07h00 às 16h30; sexta, 07h às 10h30", exames:"Segunda a quinta, 07h00 às 16h30; sexta, 07h às 10h30",
-        mamografia:"indisponível", papanicolau:"indisponível",
-        endereco:"Rua CN 1, s/n — Quadra A, Lote 1, Res. Cidade Nova (BR 356), Bairro Degredo",
-        referencia:"Ao lado do posto de gás PALLADIUM"},
       {id:"voltaredonda", nome:"Volta Redonda — CLÍNICA GASPAR",
         consulta:"Segunda, quarta e sexta, 08h00 às 11h00", exames:"Segunda, quarta e sexta, 08h00 às 11h00",
         mamografia:"indisponível", papanicolau:"indisponível",
@@ -541,7 +554,7 @@ function go(id){
   document.getElementById(id).classList.remove('hidden');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function reiniciar(){regiaoAtual=null;clinicaAtual=null;go('screen-start');}
+function reiniciar(){regiaoAtual=null;clinicaAtual=null;agDataSel=null;agHoraSel='';agKey=null;go('screen-start');}
 
 /* Preenche selects de região (início) */
 function initRegioes(){
@@ -629,7 +642,7 @@ function fecharModalMamo(){
   var sel=document.getElementById('a_tipo');
   if(ehMamoPapa(sel.value)) sel.value='';
 }
-function checarTipo(){var sel=document.getElementById('a_tipo');if(ehMamoPapa(sel.value)) abrirModalMamo();}
+
 
 /* ===================== ENVIO ===================== */
 var SCRIPT_URL="https://script.google.com/macros/s/AKfycbwdPkRoNwwPzp0NQ0BRuOhC7DRv37nD8bR3GWDzpkwqP2_fG5EzZmbKIVR3_eXX0S0q/exec"; // planilha GERAL (recebe tudo)
@@ -648,7 +661,7 @@ var UNIDADE_URLS = {
   "Maricá": "https://script.google.com/macros/s/AKfycbzN2ak5CI6p7LNg1XWAPLZKPP_B8ZTEsP0c5jSxbm-h-NVaBlvNg4EevmTkGqDyeXc/exec",
   "Petrópolis — FLUXOMED": "https://script.google.com/macros/s/AKfycbyIJWrCT3EBG_rwOAoebA9EDv8BZxMGzLa3nT1P4LSG75Y4xqaClAgxNPje7voqJQ0whg/exec",
   "Teresópolis — CLÍNICA AC": "https://script.google.com/macros/s/AKfycbz4E3nBcICREYeN1GRicilzULMDoSHNU4ZPq1t3adP3vzqG0APASoDgniAHiuS3l9AaTg/exec",
-  "Nova Friburgo — CLÍNICA HOLOS": "https://script.google.com/macros/s/AKfycbyT9h4A7pyixet4Gp0lyGW27-HAGtTjCpR4TQNDQGcBewX6jJpFr0PgYLiZ2V1ynWzO/exec",
+  "Nova Friburgo": "https://script.google.com/macros/s/AKfycbyT9h4A7pyixet4Gp0lyGW27-HAGtTjCpR4TQNDQGcBewX6jJpFr0PgYLiZ2V1ynWzO/exec",
   "Saquarema — CLÍNICA ALVIDA": "https://script.google.com/macros/s/AKfycbxyMWoO_FXxBqR3cU3UQvfGYq7NSX6FC-aVWu3HUgiRsGdAFZGNJrwL9ONh0sK9wMYilg/exec",
   "São Pedro da Aldeia — CLÍNICA AC": "https://script.google.com/macros/s/AKfycbzSedI_B-xa5qMt4evvzGb-IwuOnG1FM6b5yvFiBUjsygnCCskMq2roRu-EsrAQMySJtQ/exec",
   "Cabo Frio — CLÍNICA AC": "https://script.google.com/macros/s/AKfycbwNptupVK9SB9nMm-LecscUSy2FzoMOJ7OQiMUtL-0lgOL0Ra2nrsSFUWNTHUk5E2RS/exec",
@@ -703,20 +716,171 @@ function enviarResultado(){
 function enviarAgendamento(){
   var ids=['a_nome','a_cpf','a_nasc','a_tel','a_email','a_tipo'];
   var erro=document.getElementById('a_erro'),status=document.getElementById('a_status');
-  if(!preenchidos(ids)){erro.style.display='block';return;}
+  if(!preenchidos(ids)){erro.textContent='Preencha todos os campos para continuar.';erro.style.display='block';return;}
   if(ehMamoPapa(val('a_tipo'))){abrirModalMamo();return;}
+  if(!agDataSel || !agHoraSel){erro.textContent='Escolha o dia e o horário no calendário para continuar.';erro.style.display='block';return;}
   erro.style.display='none';status.textContent='Enviando...';
   var c=clinicaAtual||{};
+  var dataHora=nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' às '+agHoraSel;
   var dados={tipo:'AGENDAMENTO',data_envio:new Date().toLocaleString('pt-BR'),
     nome:val('a_nome'),cpf:val('a_cpf'),data_nascimento:val('a_nasc'),email:val('a_email'),
     telefone:val('a_tel'),regiao:(CLINICAS[regiaoAtual]||{}).titulo||'',
-    unidade:val('a_unidade'),tipo_atendimento:val('a_tipo'),endereco_clinica:c.endereco||''};
+    unidade:val('a_unidade'),tipo_atendimento:val('a_tipo'),endereco_clinica:c.endereco||'',
+    data_hora_agendada:dataHora};
   enviarSheets(dados,status).then(function(){
     document.getElementById('fim-msg').textContent='A sua solicitação para a unidade '+dados.unidade+' foi registrada.';
+    document.getElementById('fim-agenda-red').innerHTML=
+      '<span class="big">Compareça em: '+dataHora+'</span>'+
+      '<span class="addr">Endereço: '+(c.endereco||'')+(c.referencia?(' — '+c.referencia):'')+'</span>';
     go('screen-agendamento-fim');
   });
 }
 function val(id){return document.getElementById(id).value;}
+
+
+/* ===================== MINI-AGENDA ===================== */
+/* d = dias da semana (0=Dom,1=Seg,...,6=Sáb) | i = início | f = fim */
+var AGENDA = {
+  centro:      { consulta:[{d:[5],i:"08:00",f:"11:00"}], exames:[{d:[5],i:"08:00",f:"11:00"}] },
+  copa:        { consulta:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
+  tijuca:      { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"15:00"}] },
+  barra:       { consulta:[{d:[1,3,4],i:"08:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
+  niguacu:     { consulta:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}], exames:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}] },
+  campogrande: { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:30"}] },
+  niteroi:     { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
+  saogoncalo:  { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
+  marica:      { consulta:[{d:[4],i:"09:00",f:"11:30"},{d:[4],i:"13:00",f:"16:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"17:00"}] },
+  petropolis:  { consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
+  teresopolis: { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
+  friburgo:    { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}], exames:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}] },
+  saquarema:   { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}] },
+  saopedro:    { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
+  cabofrio:    { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
+  macae:       { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}] },
+  voltaredonda:{ consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
+  resende:     { consulta:[{d:[2,3],i:"09:00",f:"10:00"}], exames:[{d:[2,3],i:"09:00",f:"10:00"}] },
+  miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
+  mangaratiba: { consulta:[{d:[1],i:"08:00",f:"12:00"}], exames:[{d:[2,4],i:"07:30",f:"09:00"}] },
+  itaguai:     { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
+  angra:       { consulta:[{d:[2],i:"13:30",f:"15:00"},{d:[4],i:"08:00",f:"10:00"},{d:[4],i:"13:30",f:"15:00"}], exames:[] }
+};
+
+var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var DIAS_SEM=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+var agViewY, agViewM, agDataSel=null, agHoraSel='', agKey=null;
+
+function pad2(n){return (n<10?'0':'')+n;}
+function ymdBR(d){return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();}
+function nomeDiaSemana(d){return DIAS_SEM[d.getDay()];}
+function hm(s){var q=s.split(':');return parseInt(q[0],10)*60+parseInt(q[1],10);}
+function tipoAgendaKey(t){ if(t==='Avaliação Clínica (Consulta)') return 'consulta'; if(t==='Exames laboratoriais') return 'exames'; return null; }
+function blocos(id,key){ return (AGENDA[id]&&AGENDA[id][key])||[]; }
+function unidadeOfereceTipo(id,key){ return blocos(id,key).length>0; }
+function diasPermitidos(id,key){ var s={}; blocos(id,key).forEach(function(b){b.d.forEach(function(w){s[w]=1;});}); return Object.keys(s).map(Number); }
+function gerarSlots(id,key,wd){
+  var set={};
+  blocos(id,key).forEach(function(b){
+    if(b.d.indexOf(wd)<0) return;
+    var im=hm(b.i), fm=hm(b.f);
+    for(var H=0;H<24;H++){ var mm=H*60; if(mm>=im && mm<fm) set[pad2(H)+':00']=1; }
+  });
+  return Object.keys(set).sort();
+}
+
+function irAgendamento(){
+  document.getElementById('a_tipo').value='';
+  document.getElementById('agenda-wrap').classList.add('hidden');
+  document.getElementById('agenda-msg').classList.add('hidden');
+  document.getElementById('cal').innerHTML='';
+  document.getElementById('slots').innerHTML='';
+  document.getElementById('ag-sel').textContent='';
+  agDataSel=null; agHoraSel=''; agKey=null;
+  document.getElementById('a_erro').textContent='Preencha todos os campos para continuar.';
+  document.getElementById('a_unidade').value=(clinicaAtual||{}).nome||'';
+  go('screen-agendamento');
+}
+
+function checarTipo(){
+  var sel=document.getElementById('a_tipo'), v=sel.value;
+  var wrap=document.getElementById('agenda-wrap'), msg=document.getElementById('agenda-msg');
+  if(ehMamoPapa(v)){ abrirModalMamo(); wrap.classList.add('hidden'); return; }
+  agKey=tipoAgendaKey(v); agDataSel=null; agHoraSel='';
+  document.getElementById('slots').innerHTML=''; document.getElementById('ag-sel').textContent='';
+  if(!agKey){ wrap.classList.add('hidden'); return; }
+  var id=(clinicaAtual||{}).id;
+  wrap.classList.remove('hidden');
+  if(!unidadeOfereceTipo(id,agKey)){
+    document.getElementById('cal').innerHTML='';
+    msg.textContent='Esta unidade não realiza este tipo de atendimento. Selecione outro tipo ou fale com a equipe pelo WhatsApp.';
+    msg.classList.remove('hidden');
+    return;
+  }
+  msg.classList.add('hidden');
+  var hoje=new Date(); agViewY=hoje.getFullYear(); agViewM=hoje.getMonth();
+  renderCalendario();
+}
+
+function mudarMes(delta){
+  var hoje=new Date(); hoje.setHours(0,0,0,0);
+  var novo=new Date(agViewY, agViewM+delta, 1);
+  // não deixa ir para antes do mês atual
+  if(novo.getFullYear()<hoje.getFullYear() || (novo.getFullYear()===hoje.getFullYear() && novo.getMonth()<hoje.getMonth())) return;
+  agViewY=novo.getFullYear(); agViewM=novo.getMonth();
+  renderCalendario();
+}
+
+function renderCalendario(){
+  var hoje=new Date(); hoje.setHours(0,0,0,0);
+  var y=agViewY, m=agViewM, id=(clinicaAtual||{}).id;
+  var permit=diasPermitidos(id,agKey);
+  var inicioSemana=new Date(y,m,1).getDay();
+  var diasNoMes=new Date(y,m+1,0).getDate();
+  var podeVoltar=(y>hoje.getFullYear())||(y===hoje.getFullYear() && m>hoje.getMonth());
+  var html='<div class="cal-head">';
+  html+='<button type="button" '+(podeVoltar?'':'disabled')+' onclick="mudarMes(-1)">&#8249;</button>';
+  html+='<div class="cal-title">'+MESES[m]+' de '+y+'</div>';
+  html+='<button type="button" onclick="mudarMes(1)">&#8250;</button></div>';
+  html+='<div class="cal-grid">';
+  ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(function(x){ html+='<div class="cal-dow">'+x+'</div>'; });
+  for(var e=0;e<inicioSemana;e++) html+='<div class="cal-day empty"></div>';
+  for(var dia=1;dia<=diasNoMes;dia++){
+    var dt=new Date(y,m,dia); dt.setHours(0,0,0,0);
+    var passou=dt.getTime()<hoje.getTime();
+    var ok=(permit.indexOf(dt.getDay())>-1) && !passou;
+    var sel=(agDataSel && agDataSel.getFullYear()===y && agDataSel.getMonth()===m && agDataSel.getDate()===dia);
+    html+='<button type="button" class="cal-day'+(sel?' sel':'')+'" '+(ok?'':'disabled')+' onclick="selecionarDia('+y+','+m+','+dia+')">'+dia+'</button>';
+  }
+  html+='</div>';
+  document.getElementById('cal').innerHTML=html;
+}
+
+function selecionarDia(y,m,dia){
+  agDataSel=new Date(y,m,dia); agDataSel.setHours(0,0,0,0);
+  renderCalendario();
+  renderHorarios();
+}
+
+function renderHorarios(){
+  var cont=document.getElementById('slots'); cont.innerHTML='';
+  document.getElementById('ag-sel').textContent=''; agHoraSel='';
+  if(!agDataSel) return;
+  var id=(clinicaAtual||{}).id;
+  var horas=gerarSlots(id,agKey,agDataSel.getDay());
+  if(!horas.length){ cont.innerHTML='<div class="ag-none">Sem horários disponíveis neste dia.</div>'; return; }
+  horas.forEach(function(hh){
+    var b=document.createElement('button'); b.type='button'; b.className='slot'; b.textContent=hh;
+    b.onclick=function(){ selecionarHora(hh,b); };
+    cont.appendChild(b);
+  });
+}
+
+function selecionarHora(hh,btn){
+  agHoraSel=hh;
+  var todos=document.querySelectorAll('#slots .slot');
+  for(var i=0;i<todos.length;i++) todos[i].classList.remove('sel');
+  btn.classList.add('sel');
+  document.getElementById('ag-sel').textContent='Selecionado: '+nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' às '+hh;
+}
 
 /* ===================== INIT ===================== */
 initRegioes();
