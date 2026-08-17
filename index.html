@@ -363,6 +363,7 @@
 
     <div id="agenda-wrap" class="hidden">
       <label style="margin-top:16px">Escolha o dia e o horário para comparecer</label>
+      <div id="agenda-nota" class="ag-none" style="display:none"></div>
       <div id="agenda-msg" class="ag-none hidden"></div>
       <div id="cal" class="cal"></div>
       <div id="slots" class="slots"></div>
@@ -381,7 +382,7 @@
       <h2 class="title">Agendamento registrado</h2>
       <p class="lead" id="fim-msg"></p>
       <div id="fim-agenda-red" class="confirm-red"></div>
-      <div class="notice" style="text-align:left">Compareça à clínica em um dos dias e horários informados, levando a <strong>Guia do SIASS assinada</strong> e um <strong>documento de identificação com foto</strong>. O atendimento é por ordem de chegada, após o agendamento.</div>
+      <div class="notice" style="text-align:left" id="fim-notice">Compareça à clínica em um dos dias e horários informados, levando a <strong>Guia do SIASS assinada</strong> e um <strong>documento de identificação com foto</strong>. O atendimento é por ordem de chegada, após o agendamento.</div>
       <div class="notice notice-red" style="text-align:left;margin-top:12px">
         <strong style="display:block;font-size:15px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em">Importante</strong>
         Atenção aos dias e horários de funcionamento da clínica.<br><br>
@@ -453,11 +454,6 @@ const CLINICAS = {
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Coronel Gomes Machado, 118 — Sala 502, Edifício Portinari, Niterói",
         referencia:"Exatamente em frente à Casa & Vídeo. Entrada ao lado da Águas de Niterói"},
-      {id:"saogoncalo", nome:"São Gonçalo — TOTALMED",
-        consulta:"Terça, quarta e quinta, 07h30 às 10h00", exames:"Terça, quarta e quinta, 07h30 às 10h00",
-        mamografia:"indisponível", papanicolau:"indisponível",
-        endereco:"Rua Coronel Gomes Machado, 118 — Sala 502 (parte), Centro, Niterói",
-        referencia:"Galeria do edifício Varandas do Forte"},
       {id:"marica", nome:"Maricá",
         consulta:"Quinta, 09h00 às 11h30 e 13h00 às 16h", exames:"Segunda a sexta, 08h às 17h",
         mamografia:"indisponível", papanicolau:"Consultar a agenda do médico",
@@ -534,7 +530,7 @@ const CLINICAS = {
         endereco:"Rua Rio Grande do Sul, 365 — Vila Muriqui, Mangaratiba",
         referencia:"Próximo ao posto de gasolina dentro de Muriqui"},
       {id:"itaguai", nome:"Itaguaí",
-        consulta:"Segunda a sexta, 07h às 11h00", exames:"Segunda a sexta, 07h às 11h00",
+        consulta:"Segunda, 07h às 11h00", exames:"Segunda a sexta, 07h às 11h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua General Bocaiúva, 785 — Centro, Itaguaí / RJ",
         referencia:""},
@@ -729,6 +725,12 @@ function enviarAgendamento(){
     data_hora_agendada:dataHora};
   enviarSheets(dados,status).then(function(){
     document.getElementById('fim-msg').textContent='A sua solicitação para a unidade '+dados.unidade+' foi registrada.';
+    var notice=document.getElementById('fim-notice');
+    if(HORA_MARCADA[(clinicaAtual||{}).id]){
+      notice.innerHTML='Compareça à clínica levando a <strong>Guia do SIASS assinada</strong> e um <strong>documento de identificação com foto</strong>. O atendimento é por <strong>HORA MARCADA</strong> — chegue no horário agendado (não é por ordem de chegada).';
+    } else {
+      notice.innerHTML='Compareça à clínica em um dos dias e horários informados, levando a <strong>Guia do SIASS assinada</strong> e um <strong>documento de identificação com foto</strong>. O atendimento é por ordem de chegada, após o agendamento.';
+    }
     document.getElementById('fim-agenda-red').innerHTML=
       '<span class="big">Compareça em: '+dataHora+'</span>'+
       '<span class="addr">Endereço: '+(c.endereco||'')+(c.referencia?(' — '+c.referencia):'')+'</span>';
@@ -748,7 +750,6 @@ var AGENDA = {
   niguacu:     { consulta:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}], exames:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}] },
   campogrande: { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:30"}] },
   niteroi:     { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
-  saogoncalo:  { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
   marica:      { consulta:[{d:[4],i:"09:00",f:"11:30"},{d:[4],i:"13:00",f:"16:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"17:00"}] },
   petropolis:  { consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
   teresopolis: { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
@@ -761,10 +762,12 @@ var AGENDA = {
   resende:     { consulta:[{d:[2,3],i:"09:00",f:"10:00"}], exames:[{d:[2,3],i:"09:00",f:"10:00"}] },
   miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
   mangaratiba: { consulta:[{d:[1],i:"08:00",f:"12:00"}], exames:[{d:[2,4],i:"07:30",f:"09:00"}] },
-  itaguai:     { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
+  itaguai:     { consulta:[{d:[1],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
   angra:       { consulta:[{d:[2],i:"13:30",f:"15:00"},{d:[4],i:"08:00",f:"10:00"},{d:[4],i:"13:30",f:"15:00"}], exames:[] }
 };
 
+var ANTECEDENCIA_MIN = { friburgo: 1 }; // dias mínimos de antecedência (só Nova Friburgo)
+var HORA_MARCADA = { friburgo: true };   // atendimento por hora marcada (não ordem de chegada)
 var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 var DIAS_SEM=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 var agViewY, agViewM, agDataSel=null, agHoraSel='', agKey=null;
@@ -816,6 +819,14 @@ function checarTipo(){
     return;
   }
   msg.classList.add('hidden');
+  var nota=document.getElementById('agenda-nota');
+  var ant=ANTECEDENCIA_MIN[id]||0;
+  if(ant>0){
+    nota.textContent='Atenção: nesta unidade o agendamento é por HORA MARCADA e deve ser feito com no mínimo '+ant+' dia de antecedência (o dia de hoje não fica disponível).';
+    nota.style.display='block';
+  } else {
+    nota.style.display='none';
+  }
   var hoje=new Date(); agViewY=hoje.getFullYear(); agViewM=hoje.getMonth();
   renderCalendario();
 }
@@ -832,6 +843,8 @@ function mudarMes(delta){
 function renderCalendario(){
   var hoje=new Date(); hoje.setHours(0,0,0,0);
   var y=agViewY, m=agViewM, id=(clinicaAtual||{}).id;
+  var ant=ANTECEDENCIA_MIN[id]||0;
+  var minData=new Date(); minData.setHours(0,0,0,0); minData.setDate(minData.getDate()+ant);
   var permit=diasPermitidos(id,agKey);
   var inicioSemana=new Date(y,m,1).getDay();
   var diasNoMes=new Date(y,m+1,0).getDate();
@@ -845,8 +858,8 @@ function renderCalendario(){
   for(var e=0;e<inicioSemana;e++) html+='<div class="cal-day empty"></div>';
   for(var dia=1;dia<=diasNoMes;dia++){
     var dt=new Date(y,m,dia); dt.setHours(0,0,0,0);
-    var passou=dt.getTime()<hoje.getTime();
-    var ok=(permit.indexOf(dt.getDay())>-1) && !passou;
+    var antesDoMin=dt.getTime()<minData.getTime();
+    var ok=(permit.indexOf(dt.getDay())>-1) && !antesDoMin;
     var sel=(agDataSel && agDataSel.getFullYear()===y && agDataSel.getMonth()===m && agDataSel.getDate()===dia);
     html+='<button type="button" class="cal-day'+(sel?' sel':'')+'" '+(ok?'':'disabled')+' onclick="selecionarDia('+y+','+m+','+dia+')">'+dia+'</button>';
   }
@@ -866,7 +879,14 @@ function renderHorarios(){
   if(!agDataSel) return;
   var id=(clinicaAtual||{}).id;
   var horas=gerarSlots(id,agKey,agDataSel.getDay());
-  if(!horas.length){ cont.innerHTML='<div class="ag-none">Sem horários disponíveis neste dia.</div>'; return; }
+  // Se o dia escolhido for HOJE, remove os horários que já passaram
+  var agora=new Date();
+  var hoje=new Date(); hoje.setHours(0,0,0,0);
+  if(agDataSel.getTime()===hoje.getTime()){
+    var minAgora=agora.getHours()*60+agora.getMinutes();
+    horas=horas.filter(function(hh){ return hm(hh) > minAgora; });
+  }
+  if(!horas.length){ cont.innerHTML='<div class="ag-none">Não há mais horários disponíveis para este dia. Escolha outra data.</div>'; return; }
   horas.forEach(function(hh){
     var b=document.createElement('button'); b.type='button'; b.className='slot'; b.textContent=hh;
     b.onclick=function(){ selecionarHora(hh,b); };
