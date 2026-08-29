@@ -221,6 +221,7 @@
     </button>
   </section>
 
+
   <!-- ===== RESULTADOS ===== -->
   <section class="panel hidden" id="screen-resultados">
     <button class="backlink" onclick="go('screen-start')">Voltar</button>
@@ -535,7 +536,7 @@ const CLINICAS = {
         endereco:"Rua General Bocaiúva, 785 — Centro, Itaguaí / RJ",
         referencia:""},
       {id:"angra", nome:"Angra dos Reis — AUDIOMED",
-        consulta:"Terças, 13h30 às 15h; quintas, 08h às 10h e 13h30 às 15h", exames:"indisponível",
+        consulta:"Quinta, às 10h e/ou às 14h", exames:"indisponível",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Honório Lima, 129 — Centro, Angra dos Reis / RJ",
         referencia:"Ao lado da Clínica Clima Sol"},
@@ -763,7 +764,7 @@ var AGENDA = {
   miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
   mangaratiba: { consulta:[{d:[1],i:"08:00",f:"12:00"}], exames:[{d:[2,4],i:"07:30",f:"09:00"}] },
   itaguai:     { consulta:[{d:[1],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
-  angra:       { consulta:[{d:[2],i:"13:30",f:"15:00"},{d:[4],i:"08:00",f:"10:00"},{d:[4],i:"13:30",f:"15:00"}], exames:[] }
+  angra:       { consulta:[{d:[4],i:"10:00",f:"11:00"},{d:[4],i:"14:00",f:"15:00"}], exames:[] }
 };
 
 var ANTECEDENCIA_MIN = { friburgo: 1 }; // dias mínimos de antecedência (só Nova Friburgo)
@@ -901,6 +902,7 @@ function selecionarHora(hh,btn){
   btn.classList.add('sel');
   document.getElementById('ag-sel').textContent='Selecionado: '+nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' às '+hh;
 }
+
 
 /* ===================== INIT ===================== */
 initRegioes();
