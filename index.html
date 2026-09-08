@@ -441,7 +441,7 @@ const CLINICAS = {
         endereco:"Av. Armando Lombardi, 800 — Sala 228",
         referencia:"Próximo ao metrô Jardim Oceânico e ao BRT"},
       {id:"niguacu", nome:"Nova Iguaçu — MEDLAB",
-        consulta:"Segunda a sexta, 07h40 às 11h30", exames:"Segunda a sexta, 07h40 às 11h30",
+        consulta:"indisponível", exames:"Segunda a sexta, 07h40 às 11h30",
         mamografia:"indisponível", papanicolau:"Consultar a agenda do médico",
         endereco:"Rua Coronel Francisco Soares, 46 — Sala 101",
         referencia:"Próximo ao túnel, rua ao lado do supermercado Guanabara"},
@@ -536,7 +536,7 @@ const CLINICAS = {
         endereco:"Rua General Bocaiúva, 785 — Centro, Itaguaí / RJ",
         referencia:""},
       {id:"angra", nome:"Angra dos Reis — AUDIOMED",
-        consulta:"Quinta, às 10h e/ou às 14h", exames:"indisponível",
+        consulta:"Quinta, às 10h e/ou às 14h", exames:"Segunda a sexta, 07h às 10h",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Honório Lima, 129 — Centro, Angra dos Reis / RJ",
         referencia:"Ao lado da Clínica Clima Sol"},
@@ -748,7 +748,7 @@ var AGENDA = {
   copa:        { consulta:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
   tijuca:      { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"15:00"}] },
   barra:       { consulta:[{d:[1,3,4],i:"08:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
-  niguacu:     { consulta:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}], exames:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}] },
+  niguacu:     { consulta:[], exames:[{d:[1,2,3,4,5],i:"07:40",f:"11:30"}] },
   campogrande: { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:30"}] },
   niteroi:     { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
   marica:      { consulta:[{d:[4],i:"09:00",f:"11:30"},{d:[4],i:"13:00",f:"16:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"17:00"}] },
@@ -764,7 +764,7 @@ var AGENDA = {
   miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
   mangaratiba: { consulta:[{d:[1],i:"08:00",f:"12:00"}], exames:[{d:[2,4],i:"07:30",f:"09:00"}] },
   itaguai:     { consulta:[{d:[1],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
-  angra:       { consulta:[{d:[4],i:"10:00",f:"11:00"},{d:[4],i:"14:00",f:"15:00"}], exames:[] }
+  angra:       { consulta:[{d:[4],i:"10:00",f:"11:00"},{d:[4],i:"14:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"10:00"}] }
 };
 
 var ANTECEDENCIA_MIN = { friburgo: 1 }; // dias mínimos de antecedência (só Nova Friburgo)
