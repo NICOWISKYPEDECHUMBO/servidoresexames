@@ -193,6 +193,11 @@
   .confirm-red{background:#d81f27;color:#fff;border-radius:11px;padding:16px 18px;text-align:left;margin-top:14px;font-size:15px;line-height:1.55;box-shadow:0 4px 14px rgba(216,31,39,.3)}
   .confirm-red .big{display:block;font-size:17.5px;font-weight:800;margin-bottom:4px;letter-spacing:.01em}
   .confirm-red .addr{display:block;margin-top:8px;font-size:14px;opacity:.97}
+  /* ===== VÍDEO ABAIXO DO MENU ===== */
+  #video-layer{margin-top:18px}
+  #video-layer video{width:100%;max-width:300px;height:auto;display:block;margin:0 auto;border-radius:14px;border:1px solid var(--line);background:#000;box-shadow:0 2px 12px rgba(20,40,70,.10)}
+  #btn-som{margin:10px auto 0;max-width:300px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:650;cursor:pointer;font-family:inherit}
+  #btn-som:hover{background:var(--navy-d)}
 </style>
 </head>
 <body>
@@ -219,6 +224,10 @@
     <button class="choice" onclick="go('screen-resultados')">
       <span class="idx">2</span><span class="lbl">Resultados de exames realizados</span><svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
     </button>
+    <div id="video-layer">
+      <video id="promo" src="editadoadobe2.mp4" autoplay loop muted playsinline preload="metadata"></video>
+      <button id="btn-som" type="button" onclick="toggleSom()"></button>
+    </div>
   </section>
 
 
@@ -551,6 +560,8 @@ var regiaoAtual=null, clinicaAtual=null;
 function go(id){
   var s=document.querySelectorAll('.panel'); for(var i=0;i<s.length;i++) s[i].classList.add('hidden');
   document.getElementById(id).classList.remove('hidden');
+  var pv=document.getElementById('promo');
+  if(pv){ if(id==='screen-start'){ pv.play().catch(function(){}); } else { pv.pause(); } }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function reiniciar(){regiaoAtual=null;clinicaAtual=null;agDataSel=null;agHoraSel='';agKey=null;go('screen-start');}
@@ -926,6 +937,21 @@ function selecionarHora(hh,btn){
   document.getElementById('ag-sel').textContent='Selecionado: '+nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' às '+hh;
 }
 
+
+
+/* ===================== VÍDEO ===================== */
+var ICO_SOM='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+var ICO_MUDO='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
+function toggleSom(){
+  var v=document.getElementById('promo'), b=document.getElementById('btn-som');
+  if(!v) return;
+  if(v.muted){ v.muted=false; v.play(); b.innerHTML=ICO_MUDO+'Desativar som'; }
+  else { v.muted=true; b.innerHTML=ICO_SOM+'Ativar som'; }
+}
+(function(){
+  var b=document.getElementById('btn-som'); if(b) b.innerHTML=ICO_SOM+'Ativar som';
+  var v=document.getElementById('promo'); if(v){ v.play().catch(function(){}); }
+})();
 
 /* ===================== INIT ===================== */
 initRegioes();
