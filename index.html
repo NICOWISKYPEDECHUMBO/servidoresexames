@@ -257,6 +257,9 @@
     .hero-grid{grid-template-columns:1fr;gap:22px}
     .care-card{width:92%}
   }
+  /* brilho verde pulsante nos botões */
+  @keyframes choiceGlow{0%,100%{box-shadow:0 6px 18px rgba(15,118,110,.14);border-color:var(--line)}50%{box-shadow:0 12px 34px rgba(18,165,148,.42);border-color:var(--teal)}}
+  #screen-start .choice{animation:fadeUp .55s ease both, choiceGlow 2.4s ease-in-out .7s infinite}
 </style>
 </head>
 <body>
@@ -441,6 +444,7 @@
         <option value="">Selecione</option>
         <option>Avaliação Clínica (Consulta)</option>
         <option>Exames laboratoriais</option>
+        <option>Consulta Oftalmológica / Acuidade visual</option>
         <option>Mamografia/Papanicolau</option>
       </select>
     </div>
@@ -512,16 +516,19 @@ const CLINICAS = {
         referencia:"Próximo à Igreja da Candelária"},
       {id:"copa", nome:"Copacabana — Dedica Saúde",
         consulta:"Segunda a sexta, 07h50 às 11h00", exames:"Segunda a sexta, 07h50 às 11h00",
+        oftalmo:"Segunda a sexta, 07h50 às 11h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Siqueira Campos, 30 — Sala 408, Copacabana",
         referencia:"Esquina com a Nossa Senhora"},
       {id:"tijuca", nome:"Tijuca — Dedica Saúde",
-        consulta:"Segunda a sexta, 07h30 às 11h00", exames:"Segunda a sexta, 08h às 15h",
+        consulta:"Segunda a sexta, por ordem de chegada", exames:"Segunda a sexta, por ordem de chegada",
+        oftalmo:"Segunda a sexta, por ordem de chegada",
         mamografia:"Terças e quintas, 07h30 às 11h", papanicolau:"Terças e quintas, 07h30 às 11h",
         endereco:"Rua Conde de Bonfim, 460 — Loja D (entrada pela rua lateral)",
         referencia:"Próximo ao Tijuca Tênis Clube / metrô Saens Peña"},
       {id:"barra", nome:"Barra da Tijuca — RJ EXAMES",
-        consulta:"Segunda, quarta e quinta, 08h às 11h00", exames:"Segunda a sexta, 07h50 às 11h00",
+        consulta:"Quartas, quintas e sextas, 07h30 às 11h30", exames:"Segunda a sexta, 07h50 às 11h00",
+        oftalmo:"Segunda a sexta, 07h50 às 11h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Armando Lombardi, 800 — Sala 228",
         referencia:"Próximo ao metrô Jardim Oceânico e ao BRT"},
@@ -532,21 +539,25 @@ const CLINICAS = {
         referencia:"Em frente à estação de trem, ao lado da antiga Cruz Vermelha"},
       {id:"ebemmed", nome:"Nova Iguaçu — EBEMMED",
         consulta:"indisponível", exames:"Segunda a sexta, 07h às 12h (por ordem de chegada)",
+        oftalmo:"Segunda a sexta, 07h às 12h (por ordem de chegada)",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"R. Athaíde Pimenta de Morais, 33 — Centro, Nova Iguaçu / RJ, 26210-190",
         referencia:"Ao lado da loja Fuscão Preto"},
       {id:"campogrande", nome:"Campo Grande — CLÍNICA GLOBAL",
-        consulta:"Segunda a sexta, 07h às 15h", exames:"Segunda a sexta, 07h às 11h30 (por ordem de chegada)",
-        mamografia:"indisponível", papanicolau:"indisponível",
+        consulta:"Segunda a sexta, 07h às 15h", exames:"Segunda a sexta, 07h às 11h30",
+        oftalmo:"Segunda a sexta, 07h às 11h30",
+        mamografia:"Consultar a agenda do médico", papanicolau:"Consultar a agenda do médico",
         endereco:"Rua dos Franciscanos, 18 — Campo Grande",
         referencia:"Rua antes do Hotel Hotelon, em frente à passarela da Rodoviária"},
       {id:"niteroi", nome:"Niterói — TOTALMED",
         consulta:"Terça, quarta e quinta, 07h30 às 10h00", exames:"Terça, quarta e quinta, 07h30 às 10h00",
+        oftalmo:"Terça, quarta e quinta, 07h30 às 10h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Coronel Gomes Machado, 118 — Sala 502, Edifício Portinari, Niterói",
         referencia:"Exatamente em frente à Casa & Vídeo. Entrada ao lado da Águas de Niterói"},
       {id:"marica", nome:"Maricá",
         consulta:"Quinta, 09h00 às 11h30 e 13h00 às 16h", exames:"Segunda a sexta, 08h às 17h",
+        oftalmo:"Segunda a sexta, 08h às 17h",
         mamografia:"indisponível", papanicolau:"Consultar a agenda do médico",
         endereco:"Rua das Mimosas, s/n, Quadra 14, Lote 10, Loja 104 — Barroco (Itaipuaçu), Maricá",
         referencia:"Em frente ao CNA e próximo ao posto BR (acesso pelo Barroco)"},
@@ -557,16 +568,19 @@ const CLINICAS = {
     lista: [
       {id:"petropolis", nome:"Petrópolis — FLUXOMED",
         consulta:"Segunda, quarta e sexta, 08h às 11h00", exames:"Segunda, quarta e sexta, 08h às 11h00",
+        oftalmo:"Segunda, quarta e sexta, 08h às 11h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Teresa, 1515 — Salas 168 e 169",
         referencia:"No HiperShopping ABC"},
       {id:"teresopolis", nome:"Teresópolis — CLÍNICA AC",
-        consulta:"Segunda a sexta, 08h às 10h30", exames:"Segunda a sexta, 08h às 10h30",
+        consulta:"indisponível", exames:"Segunda a sexta, 08h às 10h30",
+        oftalmo:"Segunda a sexta, 08h às 10h30",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Lúcio Meira, 670 — Sala 515, Várzea, Teresópolis",
         referencia:"Shopping Várzea"},
       {id:"friburgo", nome:"Nova Friburgo",
         consulta:"HORA MARCADA", exames:"HORA MARCADA",
+        oftalmo:"HORA MARCADA",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Doutor Galdino do Valle Filho, 133 — Centro, Nova Friburgo",
         referencia:"Casa rosa na calçada do Clube do Xadrez"},
@@ -577,11 +591,13 @@ const CLINICAS = {
     lista: [
       {id:"saquarema", nome:"Saquarema — CLÍNICA ALVIDA",
         consulta:"Segunda a sexta, 07h00 às 14h30", exames:"Segunda a sexta, 07h00 às 14h30",
+        oftalmo:"Segunda a sexta, 07h00 às 14h30",
         mamografia:"Consultar a agenda do médico", papanicolau:"Consultar a agenda do médico",
         endereco:"Rua Professor Souza, 639/02 — Bacaxá, Saquarema",
         referencia:"Em frente à Academia Mitra"},
       {id:"saopedro", nome:"São Pedro da Aldeia — CLÍNICA AC",
         consulta:"Segunda a sexta, 08h às 10h30", exames:"Segunda a sexta, 08h às 10h30",
+        oftalmo:"Segunda a sexta, 08h às 10h30",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua José Francisco Zeca, 37 — Sala 06",
         referencia:"Próximo à Secretaria de Esporte"},
@@ -597,6 +613,7 @@ const CLINICAS = {
     lista: [
       {id:"macae", nome:"Macaé — CLÍNICA EJL",
         consulta:"Segunda a sexta, 07h às 09h00", exames:"Segunda a sexta, 07h às 09h00",
+        oftalmo:"Segunda a sexta, 07h às 09h00",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Av. Dr. Geraldo Menecucci de Oliveira, 47 — Parque Aeroporto, Macaé",
         referencia:""},
@@ -608,26 +625,31 @@ const CLINICAS = {
         referencia:"Próximo à Rádio 103 (Cidade do Aço)"},
       {id:"resende", nome:"Resende",
         consulta:"Terça e quarta, 09h às 10h00", exames:"Terça e quarta, 09h às 10h00",
+        oftalmo:"Terça e quarta, 09h às 10h00",
         mamografia:"Consultar a agenda do médico", papanicolau:"Consultar a agenda do médico",
         endereco:"Rua Nicolau Taranto, 57 — Campos Elíseos",
         referencia:"Próximo à Floricultura Daniela Flores"},
       {id:"miguelpereira", nome:"Miguel Pereira",
-        consulta:"indisponível", exames:"Terças, 15h às 16h; sextas, 07h30 às 08h30",
+        consulta:"Terças, 15h às 16h; sextas, 07h30 às 08h30", exames:"Terças, 15h às 16h; sextas, 07h30 às 08h30",
+        oftalmo:"Terças, 15h às 16h; sextas, 07h30 às 08h30",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Dr. Luiz Pinto, 550 — Salas 1 e 2, Centro, Miguel Pereira",
         referencia:""},
       {id:"mangaratiba", nome:"Mangaratiba",
         consulta:"Segunda, 08h00 às 12h", exames:"Terças e quintas, 07h30 às 9h",
+        oftalmo:"Terças e quintas, 07h30 às 9h",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Rio Grande do Sul, 365 — Vila Muriqui, Mangaratiba",
         referencia:"Próximo ao posto de gasolina dentro de Muriqui"},
       {id:"itaguai", nome:"Itaguaí",
         consulta:"Segunda, 07h às 11h00", exames:"Segunda a sexta, 07h às 11h00",
-        mamografia:"indisponível", papanicolau:"indisponível",
+        oftalmo:"Segunda a sexta, 07h às 11h00",
+        mamografia:"indisponível", papanicolau:"Quartas, 07h às 11h",
         endereco:"Rua General Bocaiúva, 785 — Centro, Itaguaí / RJ",
         referencia:""},
       {id:"angra", nome:"Angra dos Reis — AUDIOMED",
         consulta:"Quinta, às 10h e/ou às 14h", exames:"Segunda a sexta, 07h às 10h",
+        oftalmo:"Segunda a sexta, 07h às 10h",
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua Honório Lima, 129 — Centro, Angra dos Reis / RJ",
         referencia:"Ao lado da Clínica Clima Sol"},
@@ -812,7 +834,8 @@ function enviarAgendamento(){
   if(!agDataSel || !agHoraSel){erro.textContent='Escolha o dia e o horário no calendário para continuar.';erro.style.display='block';return;}
   erro.style.display='none';status.textContent='Enviando...';
   var c=clinicaAtual||{};
-  var dataHora=nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' às '+agHoraSel;
+  var _idc=(clinicaAtual||{}).id;
+  var dataHora=AGENDA_ORDEM[_idc] ? (nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' — por ordem de chegada') : (nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' às '+agHoraSel);
   var dados={tipo:'AGENDAMENTO',data_envio:new Date().toLocaleString('pt-BR'),
     nome:val('a_nome'),cpf:val('a_cpf'),data_nascimento:val('a_nasc'),email:val('a_email'),
     telefone:val('a_tel'),regiao:(CLINICAS[regiaoAtual]||{}).titulo||'',
@@ -838,33 +861,34 @@ function val(id){return document.getElementById(id).value;}
 /* ===================== MINI-AGENDA ===================== */
 /* d = dias da semana (0=Dom,1=Seg,...,6=Sáb) | i = início | f = fim */
 var AGENDA = {
-  centro:      { consulta:[{d:[5],i:"08:00",f:"11:00"}], exames:[{d:[5],i:"08:00",f:"11:00"}] },
-  copa:        { consulta:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
-  tijuca:      { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"15:00"}] },
-  barra:       { consulta:[{d:[1,3,4],i:"08:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
+  centro:      { consulta:[{d:[5],i:"08:00",f:"11:00"}], exames:[{d:[5],i:"08:00",f:"11:00"}], oftalmo:[{d:[5],i:"08:00",f:"11:00"}] },
+  copa:        { consulta:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
+  tijuca:      { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"15:00"}], oftalmo:[{d:[1,2,3,4,5],i:"08:00",f:"15:00"}] },
+  barra:       { consulta:[{d:[3,4,5],i:"07:30",f:"11:30"}], exames:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:50",f:"11:00"}] },
   niaso:       { consulta:[{d:[3],i:"08:00",f:"11:50"}], exames:[] },
-  ebemmed:     { consulta:[], exames:[{d:[1,2,3,4,5],i:"07:00",f:"12:00"}] },
-  campogrande: { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:30"}] },
-  niteroi:     { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
-  marica:      { consulta:[{d:[4],i:"09:00",f:"11:30"},{d:[4],i:"13:00",f:"16:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"17:00"}] },
-  petropolis:  { consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
-  teresopolis: { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
-  friburgo:    { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}], exames:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}] },
-  saquarema:   { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}] },
-  saopedro:    { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
+  ebemmed:     { consulta:[], exames:[{d:[1,2,3,4,5],i:"07:00",f:"12:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"12:00"}] },
+  campogrande: { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:30"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"11:30"}] },
+  niteroi:     { consulta:[{d:[2,3,4],i:"07:30",f:"10:00"}], exames:[{d:[2,3,4],i:"07:30",f:"10:00"}], oftalmo:[{d:[2,3,4],i:"07:30",f:"10:00"}] },
+  marica:      { consulta:[{d:[4],i:"09:00",f:"11:30"},{d:[4],i:"13:00",f:"16:00"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"17:00"}], oftalmo:[{d:[1,2,3,4,5],i:"08:00",f:"17:00"}] },
+  petropolis:  { consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}], oftalmo:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
+  teresopolis: { consulta:[], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], oftalmo:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
+  friburgo:    { consulta:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}], exames:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:30",f:"10:00"},{d:[1,2,3,4,5],i:"14:00",f:"17:00"}] },
+  saquarema:   { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"14:30"}] },
+  saopedro:    { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], oftalmo:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
   cabofrio:    { consulta:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
-  macae:       { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}] },
-  voltaredonda:{ consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
-  resende:     { consulta:[{d:[2,3],i:"09:00",f:"10:00"}], exames:[{d:[2,3],i:"09:00",f:"10:00"}] },
-  miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
-  mangaratiba: { consulta:[{d:[1],i:"08:00",f:"12:00"}], exames:[{d:[2,4],i:"07:30",f:"09:00"}] },
-  itaguai:     { consulta:[{d:[1],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
-  angra:       { consulta:[{d:[4],i:"10:00",f:"11:00"},{d:[4],i:"14:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"10:00"}] }
+  macae:       { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}] },
+  voltaredonda:{ consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}], oftalmo:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
+  resende:     { consulta:[{d:[2,3],i:"09:00",f:"10:00"}], exames:[{d:[2,3],i:"09:00",f:"10:00"}], oftalmo:[{d:[2,3],i:"09:00",f:"10:00"}] },
+  miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], oftalmo:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
+  mangaratiba: { consulta:[{d:[1],i:"08:00",f:"12:00"}], exames:[{d:[2,4],i:"07:30",f:"09:00"}], oftalmo:[{d:[2,4],i:"07:30",f:"09:00"}] },
+  itaguai:     { consulta:[{d:[1],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
+  angra:       { consulta:[{d:[4],i:"10:00",f:"11:00"},{d:[4],i:"14:00",f:"15:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"10:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"10:00"}] }
 };
 
 var ANTECEDENCIA_MIN = {}; // dias mínimos de antecedência
 var HORA_MARCADA = {};   // atendimento por hora marcada (não ordem de chegada)
-var AGENDA_WHATSAPP = { friburgo: true, voltaredonda: true }; // unidades que agendam pelo WhatsApp (sem calendário)
+var AGENDA_WHATSAPP = { friburgo: true, voltaredonda: true };
+var AGENDA_ORDEM = { tijuca: true, ebemmed: true }; // unidades por ORDEM DE CHEGADA (escolhe só o dia, sem horário) // unidades que agendam pelo WhatsApp (sem calendário)
 var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 var DIAS_SEM=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 var agViewY, agViewM, agDataSel=null, agHoraSel='', agKey=null;
@@ -873,7 +897,7 @@ function pad2(n){return (n<10?'0':'')+n;}
 function ymdBR(d){return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear();}
 function nomeDiaSemana(d){return DIAS_SEM[d.getDay()];}
 function hm(s){var q=s.split(':');return parseInt(q[0],10)*60+parseInt(q[1],10);}
-function tipoAgendaKey(t){ if(t==='Avaliação Clínica (Consulta)') return 'consulta'; if(t==='Exames laboratoriais') return 'exames'; return null; }
+function tipoAgendaKey(t){ if(t==='Avaliação Clínica (Consulta)') return 'consulta'; if(t==='Exames laboratoriais') return 'exames'; if(t==='Consulta Oftalmológica / Acuidade visual') return 'oftalmo'; return null; }
 function blocos(id,key){ return (AGENDA[id]&&AGENDA[id][key])||[]; }
 function unidadeOfereceTipo(id,key){ return blocos(id,key).length>0; }
 function diasPermitidos(id,key){ var s={}; blocos(id,key).forEach(function(b){b.d.forEach(function(w){s[w]=1;});}); return Object.keys(s).map(Number); }
@@ -937,7 +961,11 @@ function checarTipo(){
   msg.classList.add('hidden');
   var nota=document.getElementById('agenda-nota');
   var ant=ANTECEDENCIA_MIN[id]||0;
-  if(ant>0){
+  if(AGENDA_ORDEM[id]){
+    nota.innerHTML='<strong>Atendimento por ORDEM DE CHEGADA.</strong> Escolha apenas o dia — não é necessário escolher horário.';
+    nota.style.display='block';
+    lbl.textContent='Escolha o dia para comparecer';
+  } else if(ant>0){
     nota.textContent='Atenção: nesta unidade o agendamento é por HORA MARCADA e deve ser feito com no mínimo '+ant+' dia de antecedência (o dia de hoje não fica disponível).';
     nota.style.display='block';
   } else {
@@ -994,6 +1022,12 @@ function renderHorarios(){
   document.getElementById('ag-sel').textContent=''; agHoraSel='';
   if(!agDataSel) return;
   var id=(clinicaAtual||{}).id;
+  if(AGENDA_ORDEM[id]){
+    agHoraSel='por ordem de chegada';
+    cont.innerHTML='<div class="ag-none">Por ordem de chegada — não é preciso escolher horário.</div>';
+    document.getElementById('ag-sel').textContent='Selecionado: '+nomeDiaSemana(agDataSel)+', '+ymdBR(agDataSel)+' (por ordem de chegada)';
+    return;
+  }
   var horas=gerarSlots(id,agKey,agDataSel.getDay());
   // Se o dia escolhido for HOJE, remove os horários que já passaram
   var agora=new Date();
