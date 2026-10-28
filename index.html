@@ -622,12 +622,12 @@ const CLINICAS = {
         mamografia:"indisponível", papanicolau:"indisponível",
         endereco:"Rua 2, nº 197 — Conforto, Volta Redonda",
         referencia:"Próximo à Rádio 103 (Cidade do Aço)"},
-      {id:"resende", nome:"Resende",
-        consulta:"Terça e quarta, 09h às 10h00", exames:"Terça e quarta, 09h às 10h00",
-        oftalmo:"Terça e quarta, 09h às 10h00",
+      {id:"resende", nome:"Resende — Rio Medical", envio:"Resende",
+        consulta:"Segunda, quarta e sexta, 09h às 10h30", exames:"Segunda a sexta, 07h às 10h30",
+        oftalmo:"Segunda a sexta, 07h às 10h30",
         mamografia:"Consultar a agenda do médico", papanicolau:"Consultar a agenda do médico",
-        endereco:"Rua Nicolau Taranto, 57 — Campos Elíseos",
-        referencia:"Próximo à Floricultura Daniela Flores"},
+        endereco:"Avenida Riachuelo, nº 152 — Bairro Liberdade, Resende/RJ",
+        referencia:"Próximo à Caixa Econômica do bairro Manejo"},
       {id:"miguelpereira", nome:"Miguel Pereira",
         consulta:"Terças, 15h às 16h; sextas, 07h30 às 08h30", exames:"Terças, 15h às 16h; sextas, 07h30 às 08h30",
         oftalmo:"Terças, 15h às 16h; sextas, 07h30 às 08h30",
@@ -688,7 +688,7 @@ function popularUnidades(selRegiao,selUnidade){
   if(!chave||!CLINICAS[chave]){alvo.innerHTML='<option value="">Selecione a região primeiro</option>';return;}
   var o0=document.createElement('option');o0.value='';o0.textContent='Selecione a unidade';alvo.appendChild(o0);
   CLINICAS[chave].lista.forEach(function(c){
-    var o=document.createElement('option');o.value=c.nome;o.textContent=c.nome;alvo.appendChild(o);
+    var o=document.createElement('option');o.value=(c.envio||c.nome);o.textContent=c.nome;alvo.appendChild(o);
   });
 }
 
@@ -723,7 +723,7 @@ function escolherClinica(id){
   if(c.referencia) h+=rowInfo('Referência',c.referencia);
   h+='</div>';
   document.getElementById('clinica-info').innerHTML=h;
-  document.getElementById('a_unidade').value=c.nome;
+  document.getElementById('a_unidade').value=(c.envio||c.nome);
   go('screen-unidade-info');
 }
 
@@ -871,7 +871,7 @@ var AGENDA = {
   cabofrio:    { consulta:[], exames:[{d:[1,2,3,4,5],i:"08:00",f:"10:30"}] },
   macae:       { consulta:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"09:00"}] },
   voltaredonda:{ consulta:[{d:[1,3,5],i:"08:00",f:"11:00"}], exames:[{d:[1,3,5],i:"08:00",f:"11:00"}], oftalmo:[{d:[1,3,5],i:"08:00",f:"11:00"}] },
-  resende:     { consulta:[{d:[2,3],i:"09:00",f:"10:00"}], exames:[{d:[2,3],i:"09:00",f:"10:00"}], oftalmo:[{d:[2,3],i:"09:00",f:"10:00"}] },
+  resende:     { consulta:[{d:[1,3,5],i:"09:00",f:"10:30"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"10:30"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"10:30"}] },
   miguelpereira:{ consulta:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], exames:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}], oftalmo:[{d:[2],i:"15:00",f:"16:00"},{d:[5],i:"07:30",f:"08:30"}] },
   mangaratiba: { consulta:[], exames:[{d:[2,4],i:"07:30",f:"09:00"}], oftalmo:[{d:[2,4],i:"07:30",f:"09:00"}] },
   itaguai:     { consulta:[{d:[1],i:"07:00",f:"11:00"}], exames:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}], oftalmo:[{d:[1,2,3,4,5],i:"07:00",f:"11:00"}] },
@@ -915,7 +915,7 @@ function irAgendamento(){
   var z=document.getElementById('agenda-zap'); if(z){ z.style.display='none'; z.innerHTML=''; }
   var bc=document.getElementById('btn-confirmar'); if(bc){ bc.style.display=''; }
   document.getElementById('a_erro').textContent='Preencha todos os campos para continuar.';
-  document.getElementById('a_unidade').value=(clinicaAtual||{}).nome||'';
+  document.getElementById('a_unidade').value=((clinicaAtual||{}).envio||(clinicaAtual||{}).nome||'');
   go('screen-agendamento');
 }
 
